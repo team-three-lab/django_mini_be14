@@ -11,7 +11,7 @@
 ## 🚀 기술 스택 
 
 | 구분 | 사용 기술 |
-|------|-----------|
+|------|-----------| 
 | Backend Framework | Django, Django REST Framework |
 | ORM | Django ORM |
 | DB | PostgreSQL |
