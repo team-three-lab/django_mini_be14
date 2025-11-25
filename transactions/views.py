@@ -1,20 +1,68 @@
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Transaction
-from .serializers import TransactionsSerializer, TransactionCreateSerializer
+from accounts.models import Accounts
+from .serializers import TransactionListSerializer, TransactionCreateSerializer, TransactionDetailSerializer, TransactionUpdateSerializer
+
+
+
 
 class TransactionListCreateView(APIView):
-    def get (self, request):
-        transaction = Transaction.objects.all()
-        serilalzier = TransactionsSerializer(transaction, many=True)
-        return Response(serilalzier.data, status=status.HTTP_200_OK)
-        
-    def post(self, request):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, account_id):
+        transactions = Transaction.objects.filter(
+            account__id=account_id,
+            account__user=request.user)
+        serializer = TransactionListSerializer(instance=transactions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, account_id):
+        account = get_object_or_404(Accounts, id=account_id, user=request.user)
         serializer = TransactionCreateSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(account=account)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TransactionRetrieveUpdateDestroyViewView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk, account_id):
+        transaction = get_object_or_404(
+            Transaction, 
+            pk=pk,
+            account__id=account_id,
+            account__user=request.user
+            )
+        serializer = TransactionDetailSerializer(instance=transaction)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk, account_id):
+        transaction = get_object_or_404(
+            Transaction, 
+            pk=pk,
+            account__id=account_id,
+            account__user=request.user
+            )
+        serializer = TransactionUpdateSerializer(instance=transaction, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def delete(self, request, pk, account_id):
+        transaction = get_object_or_404(
+            Transaction, 
+            pk=pk,
+            account__id=account_id,
+            account__user=request.user
+            )
+        transaction.delete()
+        return Response({"msg":"Deleted"}, status=status.HTTP_200_OK)
