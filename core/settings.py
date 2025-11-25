@@ -50,6 +50,8 @@ OWN_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist"
 ]
 
 INSTALLED_APPS = DJANGO_APPS + OWN_APPS + THIRD_PARTY_APPS
@@ -142,13 +144,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'user.User'
 
+# rest_framework 인증 방식 등록.
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
-# Django project settings.py
+# 토큰 유효기간 설정
 
 from datetime import timedelta
 ...
@@ -156,7 +160,7 @@ from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'SIGNING_KEY': SECRET_KEY ,
+    'ROTATE_REFRESH_TOKENS': True, # 리프레시 토큰을 1회성으로 할 지 설정하는 것
+    'SIGNING_KEY': SECRET_KEY , #! 이거 simple_jwt가 자동으로 해주는데 왜 넣음?
     "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
 }
