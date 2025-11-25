@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import AccountListView, AccountDetailView
+from .views import AccountListCreateView, AccountRetrieveUpdateDestroyView
 
 urlpatterns = [
-    path('', AccountListView.as_view()),
-    path('<int:pk>', AccountDetailView.as_view()),
+    path('', AccountListCreateView.as_view()),
+    path('<int:pk>', AccountRetrieveUpdateDestroyView.as_view()),
 ]
