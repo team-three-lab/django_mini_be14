@@ -23,5 +23,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     #auth, jwt
-    path('accounts/', include('accounts.urls')),
+    path('', include('user.urls')),
 ]

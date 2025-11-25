@@ -11,21 +11,25 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
-from django.conf import settings
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env(
+DEBUG=(bool, True)
+)
+
+environ.Env.read_env((BASE_DIR / ".example.env").as_posix())
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!5zd!xpzxv@749zg)08rznd4zfbiu!c4f+c=vyrj@0v+3m(w1e"
+SECRET_KEY = env("SECRET_KEY")
+DEBUG = env("DEBUG")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -131,6 +135,8 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTH_USER_MODEL = 'user.User'
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -147,5 +153,5 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
     'SIGNING_KEY': SECRET_KEY ,
-    "TOKEN_OBTAIN_SERIALIZER": "account.utils.jwt_serializers.MyTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
 }
