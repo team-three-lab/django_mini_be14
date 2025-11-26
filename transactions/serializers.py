@@ -6,7 +6,7 @@ class TransactionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Transaction
-        fields = ["id", "is_deposit", "amount", "description", "transacted_at"]
+        fields = ["id","transaction_type", "is_deposit", "amount", "description", "transacted_at"]
 
     def get_description(self, obj):
         value = obj.description or ""
