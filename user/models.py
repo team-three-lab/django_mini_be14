@@ -59,15 +59,6 @@ class User(AbstractUser):
     def get_full_name(self):
         return self.name
 
-    def get_username(self):
-        return self.name
-
-    def get_first_name(self):
-        return self.name
-
-    def get_last_name(self):
-        return self.name
-
     def __str__(self):
         return self.nickname
 
