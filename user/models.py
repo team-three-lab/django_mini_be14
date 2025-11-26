@@ -59,15 +59,6 @@ class User(AbstractUser):
     def get_full_name(self):
         return self.name
 
-    def get_username(self):
-        return self.name
-
-    def get_first_name(self):
-        return self.name
-
-    def get_last_name(self):
-        return self.name
-
     def __str__(self):
         return self.nickname
 
@@ -76,6 +67,10 @@ class User(AbstractUser):
 
     def has_module_perms(self, app_label):
         return True
+
+    def soft_delete(self):
+        self.is_active = False
+        self.save()
 
     @property
     def is_staff(self):

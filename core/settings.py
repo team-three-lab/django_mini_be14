@@ -18,7 +18,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-environ.Env.read_env(BASE_DIR / ".env")
+environ.Env.read_env(BASE_DIR / ".example.env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/

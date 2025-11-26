@@ -14,15 +14,18 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = User(**data)
         errors = {}
-        try:
-            validate_password(password=data['password'], user=user)
-        except ValidationError as e:
-            errors['password'] = list(e.messages)
+
+        if 'password' in data:
+            user = self.instance or User(**data)
+            try:
+                validate_password(password=data['password'], user=user)
+            except ValidationError as e:
+                errors['password'] = list(e.messages)
 
         if errors:
             raise serializers.ValidationError(errors)
 
-        return super().validate(data)
+        return data
 
 
     def create(self, validated_data):
