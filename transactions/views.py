@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Q
 
 from .models import Transaction
 from accounts.models import Account
@@ -17,7 +18,17 @@ class TransactionListCreateView(APIView):
     def get(self, request, account_id):
         transactions = Transaction.objects.filter(
             account__id=account_id,
-            account__user=request.user)
+            account__user=request.user).order_by("-created_at")
+        
+
+        search = request.query_params.get("search")
+        if search:
+            transactions = transactions.filter(description__icontains=search)
+        
+        type = request.query_params.get("type")
+        if type:
+            transactions = transactions.filter(transaction_type=type)
+
         serializer = TransactionListSerializer(instance=transactions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
