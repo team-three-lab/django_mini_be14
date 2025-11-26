@@ -21,7 +21,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("auth/", include("user.urls")),
 
-    #auth, jwt
-    path('auth/', include('user.urls')),
+    path("account/<int:account_id>/transactions/", include("transactions.urls")),
+    path("account/", include('accounts.urls')),
 ]
+

@@ -1,5 +1,6 @@
 # 📝 Commit Message Template
 
+# ✨ feat:      기능추가
 # 🐛 fix:       버그 수정
 # 💡 chore:     기능 변화 없는 단순 수정(오타, 주석, 파일 이동 등)
 # 📝 docs:      문서 수정 (README 등)

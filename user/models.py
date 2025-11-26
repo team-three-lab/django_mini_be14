@@ -50,7 +50,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = [ "nickname", "name", "phone_number"]
 
     class Meta:
         verbose_name = '유저'

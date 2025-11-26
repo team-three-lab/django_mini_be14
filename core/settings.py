@@ -12,46 +12,50 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import environ
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env(
-DEBUG=(bool, True)
-)
-
-environ.Env.read_env((BASE_DIR / ".example.env").as_posix())
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "rest_framework",
-    #auth
-    'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
-    #owns
+]
+
+OWN_APPS = [
     "accounts",
     "user",
     "transactions",
 ]
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist"
+]
+
+INSTALLED_APPS = DJANGO_APPS + OWN_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -88,8 +92,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
 
@@ -137,13 +145,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'user.User'
 
+# rest_framework 인증 방식 등록.
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
-# Django project settings.py
+# 토큰 유효기간 설정
 
 from datetime import timedelta
 ...
@@ -151,7 +161,7 @@ from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'SIGNING_KEY': SECRET_KEY ,
+    'ROTATE_REFRESH_TOKENS': True, # 리프레시 토큰을 1회성으로 할 지 설정하는 것
+    'SIGNING_KEY': SECRET_KEY , #! 이거 simple_jwt가 자동으로 해주는데 왜 넣음?
     "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
 }
