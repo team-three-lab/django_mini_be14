@@ -60,7 +60,7 @@ class AccountRetrieveUpdateDestroyView(APIView):
         account = self.get_object(request, pk)
         account_id = account.id
         account_name = account.account_name
-        serialzier = AccountDestroySerializer(instance=account)
+        serializer = AccountDestroySerializer(instance=account)
         account.delete()
         return Response(
             {
