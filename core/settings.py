@@ -47,6 +47,8 @@ OWN_APPS = [
     "accounts",
     "user",
     "transactions",
+    "analysis",
+    "notifications"
 ]
 
 THIRD_PARTY_APPS = [

@@ -25,5 +25,7 @@ urlpatterns = [
 
     path("account/<int:account_id>/transactions/", include("transactions.urls")),
     path("account/", include('accounts.urls')),
+
+    path("notification/", include('notifications.urls'),)
 ]
 
