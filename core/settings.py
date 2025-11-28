@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import environ
 import environ
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -161,7 +162,15 @@ from datetime import timedelta
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True, 
-    'SIGNING_KEY': SECRET_KEY, 
+    'ROTATE_REFRESH_TOKENS': True, # 리프레시 토큰을 1회성으로 할 지 설정하는 것
+    'SIGNING_KEY': SECRET_KEY , #! 이거 simple_jwt가 자동으로 해주는데 왜 넣음?
     "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
 }
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
