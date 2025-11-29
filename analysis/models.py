@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from transactions.models import Transaction
+from accounts.models import Account
 
 User = get_user_model()
 
@@ -14,7 +14,7 @@ class Analysis(models.Model):
     ("YEARLY", "연간"),
     ]
     user = models.ForeignKey(User,verbose_name="유저", on_delete=models.CASCADE)
-    transactions = models.ForeignKey(Transaction,verbose_name="계좌" , on_delete=models.CASCADE)
+    transactions = models.ForeignKey(Account,verbose_name="계좌" , on_delete=models.CASCADE)
     is_income = models.BooleanField("분석 대상")
     periiod = models.CharField("분석 기간", max_length=255, choices=ANALYSIS_TYPES)
     end_date = models.DateTimeField("분석 시작 날자")
