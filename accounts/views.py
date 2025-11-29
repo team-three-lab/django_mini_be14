@@ -28,7 +28,7 @@ class AccountListCreateView(APIView):
         bank = request.query_params.get("bank")
         if bank:
             accounts = accounts.filter(bank_code=bank)
-            
+
 
         serializer = AccountsSimpleSerializer(instance=accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -79,3 +79,5 @@ class User(AbstractUser):
     @property
     def is_superuser(self):
         return self.is_admin
+
+# 해시테이블
