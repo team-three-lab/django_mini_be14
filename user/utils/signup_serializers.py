@@ -1,3 +1,4 @@
+from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -56,6 +57,18 @@ class SignUpSerializer(serializers.ModelSerializer):
         return instance
 
 
+class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
+    def save_user(self, request, sociallogin, form=None):
+
+        user = super().save_user(request, sociallogin, form)
+
+        data = request.data
+        user.phone_number = data.get('phone_number')
+        user.nickname = data.get('nickname')
+        user.name = data.get('name')
+
+        user.save()
+        return user
 
 class CustomSocialSignupSerializer(SocialLoginSerializer):
 
@@ -64,19 +77,6 @@ class CustomSocialSignupSerializer(SocialLoginSerializer):
     name = serializers.CharField(max_length=20, required=True)
 
     def validate(self, attrs):
+        return super().validate(attrs)
 
-        try:
-            data = super().validate(attrs)
-        except serializers.ValidationError as e:
-            raise e
 
-        user = self.user
-
-        # 전화번호를 저장
-        user.phone_number = attrs.get('phone_number')
-        user.nickname = attrs.get('nickname')
-        user.name = attrs.get('name')
-
-        user.save()
-
-        return data

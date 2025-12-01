@@ -1,3 +1,6 @@
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -63,3 +66,8 @@ class UserProfileView(APIView):
 
         user.soft_delete()
         return Response({"message": "회원탈퇴에 성공했습니다."})
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://localhost:8000/auth/callback/google" # 프론트엔드 콜백 URL 매치
+    client_class = OAuth2Client
