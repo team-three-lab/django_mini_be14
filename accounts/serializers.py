@@ -7,6 +7,10 @@ class AccountsSimpleSerializer(serializers.ModelSerializer):
     계좌번호 리스트 페이지 시리얼라이저
     """
     masked_account_number = serializers.SerializerMethodField()
+    bank_name = serializers.CharField(
+    source="get_bank_code_display", read_only=True
+    )
+
     
     class Meta:
         model = Account
@@ -14,7 +18,7 @@ class AccountsSimpleSerializer(serializers.ModelSerializer):
             'id',
             'account_name',
             'bank_code',
-            # 'account_type',
+            'bank_name',
             'is_primary',
             'masked_account_number'
         ]

@@ -12,13 +12,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import environ
-import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
-environ.Env.read_env(BASE_DIR / ".example.env")
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -27,9 +26,13 @@ environ.Env.read_env(BASE_DIR / ".example.env")
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=["localhost", "127.0.0.1", "backend"],
+)
+
 
 
 # Application definition
@@ -48,6 +51,8 @@ OWN_APPS = [
     "accounts",
     "user",
     "transactions",
+    "analysis",
+    "notifications",
 ]
 
 THIRD_PARTY_APPS = [
@@ -60,11 +65,14 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount',
     # allauth platform
     'allauth.socialaccount.providers.google',
+    # react
+    "corsheaders",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + OWN_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -165,13 +173,15 @@ REST_FRAMEWORK = {
 # 토큰 유효기간 설정
 
 from datetime import timedelta
-...
+
+ACCESS_TOKEN_MINUTES = env.int("ACCESS_TOKEN_MINUTES", default=60)
+REFRESH_TOKEN_DAYS = env.int("REFRESH_TOKEN_DAYS", default=7)   
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True, # 리프레시 토큰을 1회성으로 할 지 설정하는 것
-    'SIGNING_KEY': SECRET_KEY , #! 이거 simple_jwt가 자동으로 해주는데 왜 넣음?
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=ACCESS_TOKEN_MINUTES),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=REFRESH_TOKEN_DAYS),
+    'ROTATE_REFRESH_TOKENS': True, 
+    'SIGNING_KEY': SECRET_KEY, 
     "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
 }
 
@@ -219,3 +229,15 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = 'nickname'      # username 필드를 커스�
 SOCIALACCOUNT_AUTO_SIGNUP = False                   # 추가 정보 입력 ( 바로 로그인으로 안넘어감)
 SITE_ID = 1                                         # 사이트 아이디 기본값
 
+
+
+# react 주소랑 연결
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost",
+        "http://localhost:80",
+        "http://127.0.0.1",
+        "http://127.0.0.1:80",
+    ],
+)
