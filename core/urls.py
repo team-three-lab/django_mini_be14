@@ -20,11 +20,19 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("auth/", include("user.urls")),
+    path("api/admin/", admin.site.urls),
+    path("api/auth/", include("user.urls")),
+  
     # 소셜 로그인
-    path('auth/social/', include('allauth.urls')),
-    path("account/<int:account_id>/transactions/", include("transactions.urls")),
-    path("account/", include('accounts.urls')),
+    path('api/auth/social/', include('allauth.urls')),
+    path("api/account/<int:account_id>/transactions/", include("transactions.urls")),
+    path("api/account/", include('accounts.urls')),
+    
+    # account
+    path("api/account/<int:account_id>/transactions/", include("transactions.urls")),
+    path("api/account/", include('accounts.urls')),
+  
+    #analysis
+    path("api/analysis/", include('analysis.urls'))
 ]
 

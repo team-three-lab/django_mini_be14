@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
+from django.db.models import Q
 
 from .models import Account
 from .serializers import AccountsSimpleSerializer, AccountsCreateSerializer, AccountRetrieveSerializer,  AccountDestroySerializer
@@ -15,11 +16,24 @@ class AccountListCreateView(APIView):
 
 
     def get(self, request):
-        accounts = Account.objects.filter(user=request.user) 
+        accounts = Account.objects.filter(user=request.user).order_by("-created_at")
+        search = request.query_params.get("search")
+
+        if search:
+            accounts = accounts.filter(
+                Q(account_name__icontains=search)|
+                Q(account_number__icontains=search)
+            )
+
+        bank = request.query_params.get("bank")
+        if bank:
+            accounts = accounts.filter(bank_code=bank)
+
+
         serializer = AccountsSimpleSerializer(instance=accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
+
+
     def post(self, request):
         serializer = AccountsCreateSerializer(data = request.data)
         if serializer.is_valid():
