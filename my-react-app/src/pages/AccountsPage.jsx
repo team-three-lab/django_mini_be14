@@ -27,12 +27,12 @@ export default function AccountsPage() {
         <div className="app-brand">
           <span className="app-title">나만의 가계부</span>
           <span className="app-subtitle">
-            계좌별로 소비 패턴을 한눈에 살펴보세요 💹
+            계좌별로 소비 패턴을 한눈에 살펴보세요 
           </span>
         </div>
 
         <div style={{ display: "flex", gap: 8 }}>
-          {/* ✅ 소비 분석 페이지로 이동 버튼 */}
+          {/*  소비 분석 페이지로 이동 버튼 */}
           <Link to="/analysis">
             <button className="btn-ghost">소비 분석</button>
           </Link>
