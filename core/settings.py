@@ -72,6 +72,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # allauth
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -201,16 +203,19 @@ SOCIALACCOUNT_ADAPTER = 'user.utils.signup_serializers.CustomSocialAccountAdapte
 
     # 소셜 로그인/회원가입 완료 시 사용할 Serializer 지정
 REST_AUTH = {
+    'USE_JWT': True,
+    'TOKEN_MODEL': None,
     'REGISTER_SERIALIZER': 'user.utils.signup_serializers.SignUpSerializer',
+
     'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
     'SOCIAL_LOGIN_SERIALIZER': 'user.utils.signup_serializers.CustomSocialSignupSerializer',
 }
 
-ACCOUNT_AUTHENTICATION_METHOD = 'email'             # 로그인 인증방법
+ACCOUNT_LOGIN_METHODS = ['email']                   # 로그인 인증방법
 ACCOUNT_EMAIL_REQUIRED = True                       # 이메일 필수여부
 # ACCOUNT_USERNAME_REQUIRED = True                  # username 필수여부
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'            # 이메일 유효성 인증 여부 mandatory 는 필수 (optional)
-# ACCOUNT_USER_MODEL_USERNAME_FIELD = 'nickname'    # username 필드를 커스텀 필드인 nickname으로
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'nickname'      # username 필드를 커스텀 필드인 nickname으로
 SOCIALACCOUNT_AUTO_SIGNUP = False                   # 추가 정보 입력 ( 바로 로그인으로 안넘어감)
 SITE_ID = 1                                         # 사이트 아이디 기본값
 
