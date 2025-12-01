@@ -203,6 +203,7 @@ SOCIALACCOUNT_ADAPTER = 'user.utils.signup_serializers.CustomSocialAccountAdapte
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'user.utils.signup_serializers.SignUpSerializer',
     'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
+    'SOCIAL_LOGIN_SERIALIZER': 'user.utils.signup_serializers.CustomSocialSignupSerializer',
 }
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'             # 로그인 인증방법
