@@ -70,7 +70,6 @@ class CustomSocialSignupSerializer(SocialLoginSerializer):
         except serializers.ValidationError as e:
             raise e
 
-        # 2. 추가 정보 (전화번호)를 User 객체에 저장합니다.
         user = self.user
 
         # 전화번호를 저장
