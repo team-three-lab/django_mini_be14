@@ -1,14 +1,19 @@
 import axios from "axios";
 
-// 개발용 기본값: 장고 개발서버
-const DEFAULT_API_BASE_URL = "http://localhost:8000";
+// PROD / DEV 구분
+const isProd = import.meta.env.PROD;
 
-// Vite 환경변수에서 먼저 찾고, 없으면 기본값 사용
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+// 1) env에서 읽고, 없으면 PROD/DEV에 따라 기본값
+const rawBase =
+  import.meta.env.VITE_API_BASE_URL ??
+  (isProd ? "" : "http://localhost:8000");
+
+// 2) 끝에 붙은 /는 전부 제거해서 "//api" 안 나오게
+const API_BASE_URL = rawBase.replace(/\/+$/, "");
 
 // 👉 여기서 /api 까지 붙여준다
 export const apiClient = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: `${API_BASE_URL}/api`, // PROD: "/api", DEV: "http://localhost:8000/api"
   withCredentials: false,
 });
 
@@ -17,6 +22,7 @@ apiClient.interceptors.request.use(
   (config) => {
     const access = localStorage.getItem("access");
     if (access) {
+      config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${access}`;
     }
     return config;
