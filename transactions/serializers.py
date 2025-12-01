@@ -41,7 +41,6 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
 
         account = self.context["account"]
 
-        # 마지막 거래 잔액 가져오기
         last_tx = (
             Transaction.objects.filter(account=account)
             .order_by("-transacted_at", "-id")
@@ -55,7 +54,6 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
         if is_deposit:
             new_balance = prev_balance + amount
         else:
-            # 출금인데 잔액 부족
             if prev_balance < amount:
                 raise serializers.ValidationError("잔액이 부족합니다.")
             new_balance = prev_balance - amount
@@ -103,7 +101,6 @@ class TransactionUpdateSerializer(serializers.ModelSerializer):
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        # 이 거래가 속한 계좌 기준으로 전체 잔액 재계산
         from .serializers import recalc_account_balances as _recalc
 
         _recalc(instance.account)
