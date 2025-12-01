@@ -1,4 +1,3 @@
-
 name: Code Quality Checks
 
 on:
@@ -67,16 +66,24 @@ jobs:
         run: poetry run flake8 .
 
 
-
       - name: Run Django Migrations
         env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: 127.0.0.1          
+          DB_PORT: 5432
+          SECRET_KEY: dummy-ci-secret 
         run: |
-          poetry run python manage.py makemigrations
-          poetry run python manage.py migrate
+          poetry run python manage.py migrate --noinput
 
       - name: Run Django Tests
         env:
-          DATABASE_URL: postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@localhost:5432/${{ secrets.DB_NAME }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          SECRET_KEY: dummy-ci-secret
         run: |
           poetry run python manage.py test

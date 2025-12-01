@@ -30,7 +30,7 @@ DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["localhost", "127.0.0.1", "backend"],
+    default=["localhost", "127.0.0.1", "backend", "3.38.172.224"],
 )
 
 
