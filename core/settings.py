@@ -41,6 +41,7 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',
 ]
 
 OWN_APPS = [
@@ -52,7 +53,15 @@ OWN_APPS = [
 THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
-    "rest_framework_simplejwt.token_blacklist"
+    "rest_framework_simplejwt.token_blacklist",
+    #allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # allauth platform
+    'allauth.socialaccount.providers.kakao',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.naver',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + OWN_APPS + THIRD_PARTY_APPS
@@ -165,3 +174,28 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY , #! 이거 simple_jwt가 자동으로 해주는데 왜 넣음?
     "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
 }
+
+LOGIN_URL = '/auth/login/'
+
+# 로그인 성공 후 리다이렉트 URL
+LOGIN_REDIRECT_URL = '/'
+
+# 소셜 로그인
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # <- 디폴트 모델 백엔드
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+
+    # 소셜 로그인/회원가입 완료 시 사용할 Serializer 지정
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'user.utils.signup_serializers.CustomSocialSignupSerializer',
+}
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'             # 로그인 인증방법
+ACCOUNT_EMAIL_REQUIRED = True                       # 이메일 필수여부
+# ACCOUNT_USERNAME_REQUIRED = True                    # username 필수여부
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'            # 이메일 유효성 인증 여부 mandatory 는 필수 (optional)
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = 'nickname'      # username 필드를 커스텀 필드인 nickname으로
+SOCIALACCOUNT_AUTO_SIGNUP = False                   # 추가 정보 입력 ( 바로 로그인으로 안넘어감)
+SITE_ID = 1                                         # 사이트 아이디 기본값

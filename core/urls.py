@@ -22,6 +22,8 @@ from django.urls import path, include
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("user.urls")),
+    # 소셜 로그인
+    path('auth/social/', include('dj_rest_auth.registration.urls')),
 
     path("account/<int:account_id>/transactions/", include("transactions.urls")),
     path("account/", include('accounts.urls')),

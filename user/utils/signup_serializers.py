@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
+from dj_rest_auth.registration.serializers import SocialLoginSerializer
 
 User = get_user_model()
 
@@ -53,3 +54,30 @@ class SignUpSerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
+
+
+
+class CustomSocialSignupSerializer(SocialLoginSerializer):
+
+    phone_number = serializers.CharField(max_length=120, required=True)
+    nickname = serializers.CharField(max_length=120, required=True)
+    name = serializers.CharField(max_length=20, required=True)
+
+    def validate(self, attrs):
+
+        try:
+            data = super().validate(attrs)
+        except serializers.ValidationError as e:
+            raise e
+
+        # 2. 추가 정보 (전화번호)를 User 객체에 저장합니다.
+        user = self.user
+
+        # 전화번호를 저장
+        user.phone_number = attrs.get('phone_number')
+        user.nickname = attrs.get('nickname')
+        user.name = attrs.get('name')
+
+        user.save()
+
+        return data
