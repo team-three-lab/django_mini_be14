@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import IsAccountOwner
+from .permissions import IsAccountOwner
 # permissions accounts 폴더에 있는 permissions 파일 복사 했습니다.
 from django.shortcuts import get_object_or_404, redirect
 
@@ -10,11 +10,13 @@ from .models import Notification
 from .serializers import NotificationListSerializer, NotificationUpdateSerializer
 
 class NotificationList(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
         # is_read=False로 하면 남의 알람까지 다 보인다고 해서 user=request.user로 바꿨습니다.
-        notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+        notifications = Notification.objects.filter(
+            # user=request.user
+            ).order_by('-created_at')
         serializer = NotificationListSerializer(notifications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -23,7 +25,7 @@ class NotificationList(APIView):
 
 class NotificationRetrieveUpdateDestroyView(APIView):
     def get(self, request, pk):
-        permission_classes = [IsAuthenticated, IsAccountOwner]
+        # permission_classes = [IsAuthenticated, IsAccountOwner]
         # analysis의 detail로 redirect
 
         notification = get_object_or_404(Notification, pk=pk)
@@ -57,4 +59,7 @@ class NotificationRetrieveUpdateDestroyView(APIView):
         self.check_object_permissions(request, notification)
 
         notification.delete()
-        return 
+        return Response(
+            {
+                "message": "알람이 삭제되었습니다."
+            }, status=status.HTTP_200_OK)
