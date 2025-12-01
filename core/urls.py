@@ -22,9 +22,17 @@ from django.urls import path, include
 urlpatterns = [
     path("api/admin/", admin.site.urls),
     path("api/auth/", include("user.urls")),
-
+  
+    # 소셜 로그인
+    path('api/auth/social/', include('allauth.urls')),
     path("api/account/<int:account_id>/transactions/", include("transactions.urls")),
     path("api/account/", include('accounts.urls')),
+    
+    # account
+    path("api/account/<int:account_id>/transactions/", include("transactions.urls")),
+    path("api/account/", include('accounts.urls')),
+  
+    #analysis
     path("api/analysis/", include('analysis.urls'))
 ]
 
