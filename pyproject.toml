@@ -1,0 +1,27 @@
+[project]
+name = "django-mini-be14"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "choiguen",email = "daindj0@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4"
+dependencies = [
+    "django (>=5.2.8,<6.0.0)",
+    "djangorestframework (>=3.16.1,<4.0.0)",
+    "psycopg (>=3.2.13,<4.0.0)",
+    "djangorestframework-simplejwt (>=5.5.1,<6.0.0)",
+    "django-environ (>=0.12.0,<0.13.0)",
+    "psycopg2-binary (>=2.9.11,<3.0.0)",
+    "django-allauth (>=65.13.1,<66.0.0)",
+    "dj-rest-auth (>=7.0.1,<8.0.0)",
+    "django-cors-headers (>=4.9.0,<5.0.0)",
+    "gunicorn (>=23.0.0,<24.0.0)",
+    "cryptography (>=46.0.3,<47.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

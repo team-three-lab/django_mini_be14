@@ -1,0 +1,10 @@
+# 📝 Commit Message Template
+
+# ✨ feat:      기능추가
+# 🐛 fix:       버그 수정
+# 💡 chore:     기능 변화 없는 단순 수정(오타, 주석, 파일 이동 등)
+# 📝 docs:      문서 수정 (README 등)
+# 🚚 build:     빌드 관련 파일 수정 및 삭제
+# ✅ test:      테스트 코드 추가/수정 (프로덕션 코드 변경 없음)
+# ♻️ refactor:  코드 리팩터링
+# 🚑 hotfix:    긴급한 오류 해결

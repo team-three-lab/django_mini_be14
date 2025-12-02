@@ -11,35 +11,68 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!5zd!xpzxv@749zg)08rznd4zfbiu!c4f+c=vyrj@0v+3m(w1e"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list(
+    "ALLOWED_HOSTS",
+    default=["localhost", "127.0.0.1", "backend"],
+)
+
 
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',
 ]
 
+OWN_APPS = [
+    "accounts",
+    "user",
+    "transactions",
+    "analysis",
+    "notifications",
+]
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
+    #allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # allauth platform
+    'allauth.socialaccount.providers.google',
+    # react
+    "corsheaders",
+]
+
+INSTALLED_APPS = DJANGO_APPS + OWN_APPS + THIRD_PARTY_APPS
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -47,6 +80,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # allauth
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -74,8 +109,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
 
@@ -102,7 +141,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-KR"
 
 TIME_ZONE = "UTC"
 
@@ -120,3 +159,82 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = 'user.User'
+
+# rest_framework 인증 방식 등록.
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+# 토큰 유효기간 설정
+
+from datetime import timedelta
+
+ACCESS_TOKEN_MINUTES = env.int("ACCESS_TOKEN_MINUTES", default=60)
+REFRESH_TOKEN_DAYS = env.int("REFRESH_TOKEN_DAYS", default=7)   
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=ACCESS_TOKEN_MINUTES),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=REFRESH_TOKEN_DAYS),
+    'ROTATE_REFRESH_TOKENS': True, 
+    'SIGNING_KEY': SECRET_KEY, 
+    "TOKEN_OBTAIN_SERIALIZER": "user.utils.jwt_serializers.MyTokenObtainPairSerializer",
+}
+
+LOGIN_URL = '/auth/login/'
+
+# 로그인 성공 후 리다이렉트 URL
+LOGIN_REDIRECT_URL = '/'
+
+# 소셜 로그인
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # <- 디폴트 모델 백엔드
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+#ADAPTER
+SOCIALACCOUNT_ADAPTER = 'user.utils.signup_serializers.CustomSocialAccountAdapter'
+
+    # 소셜 로그인/회원가입 완료 시 사용할 Serializer 지정
+REST_AUTH = {
+    'USE_JWT': True,
+    'TOKEN_MODEL': None,
+    'REGISTER_SERIALIZER': 'user.utils.signup_serializers.SignUpSerializer',
+
+    'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
+    'SOCIAL_LOGIN_SERIALIZER': 'user.utils.signup_serializers.CustomSocialSignupSerializer',
+}
+
+ACCOUNT_LOGIN_METHODS = ['email']                   # 로그인 인증방법
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username", "password1", "password2"]
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'            # 이메일 유효성 인증 여부 mandatory 는 필수 (optional)
+ACCOUNT_USER_MODEL_USERNAME_FIELD = 'nickname'      # username 필드를 커스텀 필드인 nickname으로
+SOCIALACCOUNT_AUTO_SIGNUP = False                   # 추가 정보 입력 ( 바로 로그인으로 안넘어감)
+SITE_ID = 1                                         # 사이트 아이디 기본값
+
+# react 주소랑 연결
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost",
+        "http://localhost:80",
+        "http://127.0.0.1",
+        "http://127.0.0.1:80",
+    ],
+)
