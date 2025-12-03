@@ -4,5 +4,5 @@ from .views import AnalysisListCreateView, AnalysisDetailView, AnalysisResultVie
 urlpatterns = [
     path("", AnalysisListCreateView.as_view()),
     path("<int:pk>/", AnalysisDetailView.as_view()),
-    path("<int:pk>/result/", AnalysisResultView.as_view()),
+    path("<int:pk>/result/", AnalysisResultView.as_view())
 ]
